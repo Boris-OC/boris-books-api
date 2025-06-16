@@ -3,9 +3,26 @@ const router = express.Router();
 const bookCtrl = require('../controllers/bookController');
 const auth = require('../middleware/auth');
 const multer = require('../middleware/multer-config');
+const { bookValidationRules } = require('../middleware/validateBook');
+const { validationResult } = require('express-validator');
 
-// Créer un livre
-router.post('/', auth, multer, bookCtrl.createBook);
+// Créer un livre avec validation
+router.post(
+  '/',
+  auth,
+  multer,
+  bookValidationRules,
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    bookCtrl.createBook(req, res, next);
+  }
+);
+
+// Récupérer les 3 livres les mieux notés
+router.get('/bestrating', bookCtrl.getBestRatedBooks);
 
 // Récupérer tous les livres
 router.get('/', bookCtrl.getAllBooks);

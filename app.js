@@ -1,5 +1,3 @@
-// app.js — Configuration principale de l'application
-
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
@@ -15,16 +13,35 @@ const app = express();
 
 // Connexion à MongoDB Atlas
 mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('✅ Connexion à MongoDB réussie !'))
-  .catch((err) => console.error('❌ Échec de connexion MongoDB :', err));
+  .then(() => console.log(' Connexion à MongoDB réussie !'))
+  .catch((err) => console.error(' Échec de connexion MongoDB :', err));
 
 // Middlewares globaux
-app.use(express.json()); // Body parser
-app.use(helmet()); // Sécurité en-têtes HTTP
-app.use(mongoSanitize()); // Protection injection NoSQL
-app.use('/images', express.static(path.join(__dirname, 'images'))); // Accès dossier images
+app.use(express.json());
+app.use(helmet());
+app.use(mongoSanitize());
 
-// Limiteur de requêtes (100 req / 15 min)
+//  Autoriser CORS pour le front (React)
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  next();
+});
+
+//  Autoriser explicitement les images à être servies au frontend (évite les blocages CORS)
+app.use('/images', (req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001');
+  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Methods', 'GET');
+  res.setHeader('Access-Control-Expose-Headers', 'Content-Length,Content-Type');
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  res.setHeader('Cache-Control', 'no-store'); // optionnel mais utile en dev
+  next();
+}, express.static(path.join(__dirname, 'images')));
+
+// Limiteur de requêtes
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100
@@ -35,5 +52,4 @@ app.use(limiter);
 app.use('/api/auth', authRoutes);
 app.use('/api/books', bookRoutes);
 
-// Exportation de l'app
 module.exports = app;
