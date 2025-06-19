@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bookCtrl = require('../controllers/bookController');
 const auth = require('../middleware/auth');
+const sharp = require('../middleware/sharp');
 const multer = require('../middleware/multer-config');
 const { bookValidationRules } = require('../middleware/validateBook');
 const { validationResult } = require('express-validator');
@@ -11,6 +12,7 @@ router.post(
   '/',
   auth,
   multer,
+  sharp,
   bookValidationRules,
   (req, res, next) => {
     const errors = validationResult(req);
@@ -31,7 +33,7 @@ router.get('/', bookCtrl.getAllBooks);
 router.get('/:id', bookCtrl.getOneBook);
 
 // Modifier un livre
-router.put('/:id', auth, multer, bookCtrl.modifyBook);
+router.put('/:id', auth, multer, sharp, bookCtrl.modifyBook);
 
 // Supprimer un livre
 router.delete('/:id', auth, bookCtrl.deleteBook);

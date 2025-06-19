@@ -1,50 +1,23 @@
 const Book = require('../models/book');
 const fs = require('fs');
 const path = require('path');
-const sharp = require('sharp');
 
-// Fonction pro pour essayer de supprimer un fichier avec retries (problème EPERM sur Windows)
-const tryUnlink = (path, retries = 5) => {
-  fs.unlink(path, (err) => {
-    if (err) {
-      if (err.code === 'EPERM' && retries > 0) {
-        console.warn(`Retrying unlink for ${path} (${retries} retries left)`);
-        setTimeout(() => tryUnlink(path, retries - 1), 100); // retry after 100ms
-      } else {
-        console.error('Erreur suppression image originale:', err);
-      }
-    } else {
-      console.log('Image originale supprimée');
-    }
-  });
-};
-
-// Créer un livre avec optimisation d'image
+// Créer un livre
 exports.createBook = async (req, res) => {
   try {
     const bookObject = JSON.parse(req.body.book);
     delete bookObject._id;
-    delete bookObject.userId; // 
+    delete bookObject.userId;
 
-    const inputPath = req.file.path;
-    const outputPath = inputPath.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+    const initialRating = bookObject.rating || 0;
 
-    await sharp(inputPath)
-      .resize(500)
-      .webp({ quality: 80 })
-      .toFile(outputPath)
-      .then(() => {
-        tryUnlink(inputPath);
-      });
-
-const initialRating = bookObject.rating || 0;
-const book = new Book({
-  ...bookObject,
-  userId: req.auth.userId,
-  imageUrl: `${req.protocol}://${req.get('host')}/images/${path.basename(outputPath)}`,
-  ratings: initialRating > 0 ? [{ userId: req.auth.userId, grade: initialRating }] : [],
-  averageRating: initialRating
-});
+    const book = new Book({
+      ...bookObject,
+      userId: req.auth.userId,
+      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+      ratings: initialRating > 0 ? [{ userId: req.auth.userId, grade: initialRating }] : [],
+      averageRating: initialRating
+    });
 
     await book.save();
     res.status(201).json(book);
@@ -52,7 +25,6 @@ const book = new Book({
     res.status(400).json({ error: error.message });
   }
 };
-
 
 // Récupérer tous les livres
 exports.getAllBooks = (req, res) => {
@@ -68,7 +40,7 @@ exports.getOneBook = (req, res) => {
     .catch(error => res.status(404).json({ error }));
 };
 
-// Modifier un livre (sans optimisation d'image pour l'instant)
+// Modifier un livre (l'image est déjà optimisée par le middleware sharp)
 exports.modifyBook = (req, res) => {
   const bookObject = req.file
     ? {
@@ -90,7 +62,6 @@ exports.deleteBook = (req, res) => {
       fs.unlink(`images/${filename}`, (err) => {
         if (err) {
           console.error('Erreur suppression image originale:', err);
-          // On continue quand même pour supprimer le livre
         }
 
         Book.deleteOne({ _id: req.params.id })
