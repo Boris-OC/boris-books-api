@@ -18,9 +18,6 @@ exports.bookValidationRules = [
     if (!book.author || book.author.trim() === '') {
       throw new Error('L’auteur est obligatoire');
     }
-
-    // Tu peux ajouter d’autres validations ici si besoin
-
     return true;
   })
 ];

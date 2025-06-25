@@ -15,9 +15,7 @@ module.exports = async (req, res, next) => {
       .webp({ quality: 80 })
       .toFile(outputPath);
 
-    fs.unlink(inputPath, (err) => {
-      if (err) console.error('Erreur suppression image originale :', err);
-    });
+    fs.unlink(inputPath, () => {});
 
     // Mise à jour du fichier
     req.file.filename = outputFilename;
