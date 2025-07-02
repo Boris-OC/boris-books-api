@@ -9,14 +9,14 @@ exports.createBook = async (req, res) => {
     delete bookObject._id;
     delete bookObject.userId;
 
-    const initialRating = bookObject.rating || 0;
+    
 
     const book = new Book({
       ...bookObject,
       userId: req.auth.userId,
       imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
-      ratings: initialRating > 0 ? [{ userId: req.auth.userId, grade: initialRating }] : [],
-      averageRating: initialRating
+      ratings:  [{ userId: req.auth.userId, grade: bookObject.ratings[0].grade }],
+      averageRating: bookObject.ratings[0].grade
     });
 
     await book.save();

@@ -14,13 +14,8 @@ router.post(
   multer,
   sharp,
   bookValidationRules,
-  (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    bookCtrl.createBook(req, res, next);
-  }
+  validateRequest,
+  bookCtrl.createBook
 );
 
 // Récupérer les 3 livres les mieux notés
