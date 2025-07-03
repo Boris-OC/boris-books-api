@@ -4,7 +4,7 @@ const bookCtrl = require('../controllers/bookController');
 const auth = require('../middleware/auth');
 const sharp = require('../middleware/sharp');
 const multer = require('../middleware/multer-config');
-const { bookValidationRules } = require('../middleware/validateBook');
+const { bookValidationRules, validateRequest } = require('../middleware/validateBook');
 const { validationResult } = require('express-validator');
 
 // Créer un livre avec validation
