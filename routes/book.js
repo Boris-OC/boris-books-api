@@ -6,7 +6,6 @@ const sharp = require('../middleware/sharp');
 const multer = require('../middleware/multer-config');
 const { bookValidationRules, } = require('../middleware/validateBook');
 const validateRequest = require('../middleware/validateRequest');
-const { validationResult } = require('express-validator');
 
 // Créer un livre avec validation
 router.post(
@@ -29,12 +28,12 @@ router.get('/', bookCtrl.getAllBooks);
 router.get('/:id', bookCtrl.getOneBook);
 
 // Modifier un livre
-router.put('/:id', auth, multer, sharp, bookCtrl.modifyBook);
+router.put('/:id', auth, multer, sharp, bookValidationRules, validateRequest, bookCtrl.modifyBook);
 
 // Supprimer un livre
 router.delete('/:id', auth, bookCtrl.deleteBook);
 
 // Noter un livre
-router.post('/:id/rating', auth, bookCtrl.rateBook);
+router.post('/', auth, multer, sharp, bookValidationRules, validateRequest, bookCtrl.createBook);
 
 module.exports = router;

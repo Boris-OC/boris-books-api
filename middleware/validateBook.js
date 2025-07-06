@@ -18,6 +18,15 @@ exports.bookValidationRules = [
     if (!book.author || book.author.trim() === '') {
       throw new Error('L’auteur est obligatoire');
     }
+
+    if (book.year === undefined || book.year === null || book.year.toString().trim() === '') {
+      throw new Error("L'année est obligatoire");
+    }
+
+    if (!book.genre || book.genre.trim() === '') {
+      throw new Error('Le genre est obligatoire');
+    }
+
     return true;
   })
 ];
