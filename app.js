@@ -27,6 +27,12 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  
+  //  Gérer les requêtes préflight CORS
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200); // CORS ok, on s'arrête ici
+  }
+
   next();
 });
 

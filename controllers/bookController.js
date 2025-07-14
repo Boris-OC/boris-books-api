@@ -74,20 +74,31 @@ exports.rateBook = (req, res) => {
   const userId = req.auth.userId;
   const grade = req.body.rating;
 
+  if (grade === undefined || grade < 0 || grade > 5) {
+    return res.status(400).json({ message: 'La note doit être comprise entre 0 et 5.' });
+  }
+
   Book.findById(req.params.id)
     .then(book => {
-      const existingRating = book.ratings.find(r => r.userId === userId);
+      if (!book) {
+        return res.status(404).json({ message: 'Livre non trouvé.' });
+      }
+
+      const existingRating = book.ratings.find(r => r.userId.toString() === userId);
       if (existingRating) {
         return res.status(400).json({ message: 'Vous avez déjà noté ce livre.' });
       }
+
       book.ratings.push({ userId, grade });
 
       const total = book.ratings.reduce((acc, cur) => acc + cur.grade, 0);
-      book.averageRating = total / book.ratings.length;
+      book.averageRating = Number((total / book.ratings.length).toFixed(1));
 
-      return book.save().then(() => res.status(200).json(book));
+      return book.save()
+        .then(() => res.status(200).json(book))
+        .catch(saveError => res.status(500).json({ error: saveError.message }));
     })
-    .catch(error => res.status(400).json({ error }));
+    .catch(error => res.status(500).json({ error: error.message }));
 };
 
 // Récupérer les 3 livres les mieux notés

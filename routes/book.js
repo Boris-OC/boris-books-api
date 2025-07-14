@@ -4,8 +4,7 @@ const bookCtrl = require('../controllers/bookController');
 const auth = require('../middleware/auth');
 const sharp = require('../middleware/sharp');
 const multer = require('../middleware/multer-config');
-const { bookValidationRules, } = require('../middleware/validateBook');
-const validateRequest = require('../middleware/validateRequest');
+const validateBook = require('../middleware/validateBook');
 
 // Créer un livre avec validation
 router.post(
@@ -13,8 +12,7 @@ router.post(
   auth,
   multer,
   sharp,
-  bookValidationRules,
-  validateRequest,
+  validateBook,
   bookCtrl.createBook
 );
 
@@ -28,12 +26,12 @@ router.get('/', bookCtrl.getAllBooks);
 router.get('/:id', bookCtrl.getOneBook);
 
 // Modifier un livre
-router.put('/:id', auth, multer, sharp, bookValidationRules, validateRequest, bookCtrl.modifyBook);
+router.put('/:id', auth, multer, sharp, validateBook, bookCtrl.modifyBook);
 
 // Supprimer un livre
 router.delete('/:id', auth, bookCtrl.deleteBook);
 
 // Noter un livre
-router.post('/', auth, multer, sharp, bookValidationRules, validateRequest, bookCtrl.createBook);
+router.post('/:id/rating', auth, bookCtrl.rateBook);
 
 module.exports = router;
