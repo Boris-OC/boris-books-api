@@ -1,0 +1,22 @@
+[33mf03e5f0[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m opti
+[33m9df761c[m note fonctionnel
+[33ma11188e[m opti
+[33m2d848a6[m opti
+[33maaa7aa0[m opti
+[33mefada1b[m opti
+[33m5155475[m optimisation
+[33m97bbf8e[m small fixes
+[33m886b100[m optimisation fonctionnel avec sharp
+[33m2a67ce8[m erreur image corriger
+[33m5bf6720[m cleanclean
+[33m813c2f0[m clean
+[33m13d7204[m Ajoute la collection Postman
+[33ma211bc8[m Ajoute le fichier README.md
+[33maebc2c6[m Ajoute le fichier .env.example
+[33m8102b90[m Ajoute le middleware d'authentification JWT
+[33mdba6126[m Ajoute les routes de gestion des livres
+[33m38e7eb3[m Ajoute les routes d'authentification
+[33m70e151a[m Ajoute point d'entree de l'API dans server.js
+[33m7184dcc[m Ajoute package-lock.json pour figer les versions
+[33mbe4ab98[m Ajoute package.json avec les dependances necessaires
+[33m92467fc[m Ajoute .gitignore pour ignorer les fichiers sensibles
